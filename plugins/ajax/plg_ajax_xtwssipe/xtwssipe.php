@@ -57,6 +57,14 @@ class PlgAjaxXtWsSipe extends CMSPlugin
      */
     protected $autoloadLanguage = true;
 
+    public function __construct(&$subject, $config = [])
+    {
+        parent::__construct($subject, $config);
+
+        $this->loggingOk = (bool) $this->params->get('logging_ok');
+        $this->loggingError = (bool) $this->params->get('logging_error');
+    }
+
     public function onAjaxXtWsSipe()
     {
         $this->username = $this->params->get('username');
@@ -64,7 +72,7 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         $this->certificate = $this->params->get('certificate');
 
         if (!$this->validApiCredentials()) {
-            $this->log('Invalid Api Credentials');
+            $this->logError('Invalid Api Credentials');
 
             return $this->invalidData();
         }
@@ -81,7 +89,7 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         $response = $this->getPersonaDni($dni, $sexo);
 
         if (empty($response)) {
-            $this->log(sprintf('Respuesta vacia (dni %s, sexo %s)', $dni, $sexo));
+            $this->logWarn(sprintf('Respuesta vacia (dni %s, sexo %s)', $dni, $sexo));
 
             return $this->invalidData();
         }
@@ -89,18 +97,16 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         $packet = json_decode($response);
 
         if (!$packet->resultadoWS->exito) {
-            $this->log(sprintf('Respuesta invalida (dni %s, sexo %s)', $dni, $sexo));
+            $this->logWarn(sprintf('Respuesta invalida (dni %s, sexo %s)', $dni, $sexo));
 
             return $this->invalidData();
         }
 
         if (!$this->check($packet, $dni, $sexo, $tramiteNro)) {
-            $this->log(sprintf('Respuesta no verificada (dni %s, sexo %s, tramite %s)', $dni, $sexo, $tramiteNro));
-
             return $this->invalidData();
         }
 
-        $this->log(sprintf('VALIDO (dni %s, sexo %s, tramite %s)', $dni, $sexo, $tramiteNro));
+        $this->logInfo(sprintf('VALIDO (dni %s, sexo %s, tramite %s) Respuesta: %s', $dni, $sexo, $tramiteNro, json_encode($packet->personaInfo)));
 
         return $this->validData($packet, $this->sign($dni));
     }
@@ -118,7 +124,7 @@ class PlgAjaxXtWsSipe extends CMSPlugin
             'apellido' => $packet->personaInfo->apellido,
             'fechaNacimiento' => substr($packet->personaInfo->fechaNacimiento, 0, 10),
             'domicilio' => trim($this->calle.' '.$this->numero),
-            'localidad' => $this->municipio,
+            // 'localidad' => $this->municipio,
             'firma' => $firma,
         ];
     }
@@ -131,25 +137,25 @@ class PlgAjaxXtWsSipe extends CMSPlugin
     private function validInput($dni, $sexo, $tramiteNro)
     {
         if (empty($dni) || empty($sexo) || empty($tramiteNro)) {
-            $this->log(sprintf('Invalid (dni %s, sexo %s, tramiteNro %s)', $dni, $sexo, $tramiteNro));
+            $this->logWarn(sprintf('Datos Inválidos (dni %s, sexo %s, tramiteNro %s)', $dni, $sexo, $tramiteNro));
 
             return false;
         }
 
         if (!preg_match('/\d{7,8}/', $dni)) {
-            $this->log(sprintf('Invalid (dni %s)', $dni));
+            $this->logWarn(sprintf('Datos Inválidos DNI (dni %s, sexo %s, tramiteNro %s)', $dni, $sexo, $tramiteNro));
 
             return false;
         }
 
         if (!is_numeric($tramiteNro)) {
-            $this->log(sprintf('Invalid (tramiteNro %s)', $tramiteNro));
+            $this->logWarn(sprintf('Datos Inválidos Trámite (dni %s, sexo %s, tramiteNro %s)', $dni, $sexo, $tramiteNro));
 
             return false;
         }
 
         if (!preg_match('/[MF]/', $sexo)) {
-            $this->log(sprintf('Invalid (sexo %s)', $sexo));
+            $this->logWarn(sprintf('Datos Inválidos Sexo (sexo %s)', $sexo));
 
             return false;
         }
@@ -173,14 +179,14 @@ class PlgAjaxXtWsSipe extends CMSPlugin
             }
 
             if (!$resideEnSanJuan) {
-                $this->log(sprintf('No reside en San Juan (dni %s, sexo %s)', $dni, $sexo));
+                $this->logWarn(sprintf('No reside en San Juan (dni %s, sexo %s, respuesta %s)', $dni, $sexo, $domicilio->provincia));
 
                 return false;
             }
         }
 
         if ($sexo !== $packet->personaInfo->sexo[0]) {
-            $this->log(sprintf('Sexo incorrecto (dni %s, sexo %s)', $dni, $sexo));
+            $this->logWarn(sprintf('Sexo incorrecto (dni %s, sexo %s, respuesta %s)', $dni, $sexo, $packet->personaInfo->sexo[0]));
 
             return false;
         }
@@ -189,7 +195,7 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         $tramiteNro = ltrim($tramiteNro, '0');
 
         if ($idTramiteRenaper !== $tramiteNro) {
-            $this->log(sprintf('Trámite incorrecto (dni %s, sexo %s, tramite)', $dni, $sexo, $tramiteNro));
+            $this->logWarn(sprintf('Trámite incorrecto (dni %s, sexo %s, tramite %s, respuesta %s)', $dni, $sexo, $tramiteNro, $idTramiteRenaper));
 
             return false;
         }
@@ -199,7 +205,7 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         $dni = ltrim($dni, '0');
 
         if ($dni !== $personaInfoDni) {
-            $this->log(sprintf('DNI incorrecto (dni %s, sexo %s)', $dni, $sexo));
+            $this->logWarn(sprintf('DNI incorrecto (dni %s, sexo %s, respuesta)', $dni, $sexo, $personaInfoDni));
 
             return false;
         }
@@ -225,7 +231,7 @@ class PlgAjaxXtWsSipe extends CMSPlugin
 
             $content = JHttpFactory::getHttp($options)->get($url, null, $timeout)->body;
         } catch (RuntimeException $e) {
-            $this->log('getContents: '.$e->getMessage());
+            $this->logError('getContents: '.$e->getMessage());
 
             return false;
         }
@@ -238,21 +244,34 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         return base64_encode(sha1($dni, $this->certificate));
     }
 
-    private function log($mensaje, $status = null)
+    private function logError($mensaje)
     {
-        if (!(bool) $this->params->get('logging')) {
+        return $this->log($mensaje, JLog::ERROR);
+    }
+
+    private function logWarn($mensaje, $status = null)
+    {
+        return $this->log($mensaje, JLog::WARNING);
+    }
+
+    private function logInfo($mensaje, $status = null)
+    {
+        return $this->log($mensaje, JLog::INFO);
+    }
+
+    private function log($mensaje, $status)
+    {
+        if (!$this->loggingOk && !$this->loggingError) {
             return;
         }
 
         jimport('joomla.log.logger.formattedtext');
 
-        if (!status) {
-            $status = JLog::WARN;
-        }
+        $config = [
+            'text_file' => JLog::INFO === $status ? 'xt-logging.log' : 'xt-logging-err.log',
+        ];
 
-        $logger = new JLogLoggerFormattedtext([
-            'text_file' => 'xt-logging.log',
-        ]);
+        $logger = new JLogLoggerFormattedtext($config);
         $entry = new JLogEntry('XtWsSipe - '.$mensaje, $status);
         $logger->addEntry($entry);
     }

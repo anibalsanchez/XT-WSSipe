@@ -28,6 +28,16 @@
         <field name="username" type="text" label="WS Sipe Usuario" />
         <field name="password" type="password" label="WS Sipe Clave" />
         <field name="certificate" type="password" label="Certificado para Firma de Formularios" />
+
+				<field name="logging_ok" type="radio" class="btn-group btn-group-yesno" default="0" label="Logging Válidos">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+				</field>
+
+				<field name="logging_error" type="radio" class="btn-group btn-group-yesno" default="0" label="Logging Rechazos y Errores">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+				</field>
       </fieldset>
     </fields>
   </config>

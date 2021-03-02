@@ -1,4 +1,35 @@
-### Consulta DNI Correcto y San Juan
+### FAIL - validInput false dni
+POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
+content-type: application/json
+
+{
+    "dni": "177241a",
+    "sexo": "F",
+    "tramiteNro": "222261631"
+}
+
+### FAIL - validInput false sexo
+POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
+content-type: application/json
+
+{
+    "dni": "1772416",
+    "sexo": "T",
+    "tramiteNro": "222261631"
+}
+
+### FAIL - validInput false tramiteNro
+POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
+content-type: application/json
+
+{
+    "dni": "1772416",
+    "sexo": "M",
+    "tramiteNro": "22226163a"
+}
+
+
+### OK - Consulta DNI Correcto y San Juan
 POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
 content-type: application/json
 
@@ -8,7 +39,7 @@ content-type: application/json
     "tramiteNro": "222261631"
 }
 
-### Consulta DNI Correcto con 0, San Juan y tramite con 00
+### OK - Consulta DNI Correcto con 0, San Juan y tramite con 00
 POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
 content-type: application/json
 
@@ -19,7 +50,7 @@ content-type: application/json
 }
 
 
-### Consulta DNI Correcto con 0, San Juan, tramite con 00 y Sexo Incorrecto
+### FAIL - Consulta DNI Correcto con 0, San Juan, tramite con 00 y Sexo Incorrecto
 POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
 content-type: application/json
 
@@ -29,7 +60,17 @@ content-type: application/json
     "tramiteNro": "00222261631"
 }
 
-### Consulta DNI Correcto, tramite con 00 y No San Juan
+### FAIL - Consulta DNI Incorrecto
+POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
+content-type: application/json
+
+{
+    "dni": "00000000",
+    "sexo": "F",
+    "tramiteNro": "222261631"
+}
+
+### FAIL - Check Consulta DNI Correcto, tramite con 00 y No San Juan
 POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
 content-type: application/json
 
@@ -39,12 +80,13 @@ content-type: application/json
     "tramiteNro": "00173558151"
 }
 
-### Consulta DNI Incorrecto
+### FAIL - Check Consulta OK, tramite incorrecto
 POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
 content-type: application/json
 
 {
-    "dni": "1772419",
+    "dni": "01772416",
     "sexo": "F",
-    "tramiteNro": "222261631"
+    "tramiteNro": "00222261999"
 }
+
