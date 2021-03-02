@@ -118,11 +118,17 @@ class PlgAjaxXtWsSipe extends CMSPlugin
 
     private function validData($packet, $firma)
     {
+        $dt = new DateTimeImmutable(
+            $packet->personaInfo->fechaNacimiento,
+            new DateTimeZone('America/Argentina/Buenos_Aires')
+        );
+        $fechaNacimiento = $dt->format('d/m/Y');
+
         return [
             'estado' => true,
             'nombre' => $packet->personaInfo->nombre,
             'apellido' => $packet->personaInfo->apellido,
-            'fechaNacimiento' => substr($packet->personaInfo->fechaNacimiento, 0, 10),
+            'fechaNacimiento' => $fechaNacimiento,
             'domicilio' => trim($this->calle.' '.$this->numero),
             // 'localidad' => $this->municipio,
             'firma' => $firma,
