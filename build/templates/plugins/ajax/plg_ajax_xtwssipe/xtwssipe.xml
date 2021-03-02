@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="3.8" group="ajax" method="upgrade">
+  <name>Ajax - XT WS Sipe Multifuentes Persona Humanav1</name>
+  <version>[RELEASE_VERSION]</version>
+  <creationDate>[DATE]</creationDate>
+
+[MANIFEST_COPYRIGHT]
+
+  <description><![CDATA[
+<p>El plugin ajax <b>XT WS Sipe Multifuentes Persona Humanav1</b> provee el soporte para la comunicación del API.</p>
+]]></description>
+  <!-- Scripts to run on installation -->
+  <scriptfile></scriptfile>
+  <!-- Plugin files -->
+  <files>
+    <filename plugin="[EXTENSION_ALIAS]">[EXTENSION_ALIAS].php</filename>
+  </files>
+  <!-- Language files -->
+  <languages folder="language">
+    <language tag="en-GB">en-GB/en-GB.plg_ajax_[EXTENSION_ALIAS].ini</language>
+    <language tag="en-GB">en-GB/en-GB.plg_ajax_[EXTENSION_ALIAS].sys.ini</language>
+  </languages>
+
+  <!-- Config parameters -->
+  <config>
+    <fields name="params">
+      <fieldset name="basic">
+        <field name="username" type="text" label="WS Sipe Usuario" />
+        <field name="password" type="password" label="WS Sipe Clave" />
+        <field name="certificate" type="text"" label="Certificado" />
+      </fieldset>
+    </fields>
+  </config>
+</extension>

@@ -1,0 +1,29 @@
+### Consulta DNI Correcto
+GET https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=22269197&sexo=M
+Authorization: Basic ********:********
+content-type: application/json
+
+### Consulta DNI Correcto
+GET https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=1772416&sexo=F
+Authorization: Basic ********:********
+content-type: application/json
+
+### Consulta DNI Correcto
+GET https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=6769548&sexo=M
+Authorization: Basic ********:********
+content-type: application/json
+
+### Consulta DNI Correcto
+GET https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=6749609&sexo=M
+Authorization: Basic ********:********
+content-type: application/json
+
+### Consulta DNI Sexo Incorrecto
+GET https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=22269197&sexo=F
+Authorization: Basic ********:********
+content-type: application/json
+
+### Consulta DNI Numero Incorrecto
+GET https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=99123123&sexo=M
+Authorization: Basic ********:********
+content-type: application/json
