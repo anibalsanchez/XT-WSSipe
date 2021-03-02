@@ -1,43 +1,50 @@
-### Consulta DNI Correcto
+### Consulta DNI Correcto y San Juan
+POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
+content-type: application/json
+
+{
+    "dni": "1772416",
+    "sexo": "F",
+    "tramiteNro": "222261631"
+}
+
+### Consulta DNI Correcto con 0, San Juan y tramite con 00
+POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
+content-type: application/json
+
+{
+    "dni": "01772416",
+    "sexo": "F",
+    "tramiteNro": "00222261631"
+}
+
+
+### Consulta DNI Correcto con 0, San Juan, tramite con 00 y Sexo Incorrecto
+POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
+content-type: application/json
+
+{
+    "dni": "01772416",
+    "sexo": "M",
+    "tramiteNro": "00222261631"
+}
+
+### Consulta DNI Correcto, tramite con 00 y No San Juan
 POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
 content-type: application/json
 
 {
     "dni": "22269197",
     "sexo": "M",
-    "tramite": "173558151"
+    "tramiteNro": "00173558151"
 }
 
-### Consulta DNI Correcto y tramite con 00
+### Consulta DNI Incorrecto
 POST http://dev-vacunacion-sanjuan.sisanjuan.gob.ar/index.php?option=com_ajax&plugin=xtwssipe&format=json
 content-type: application/json
 
 {
-    "dni": "22269197",
-    "sexo": "M",
-    "tramite": "00173558151"
+    "dni": "1772419",
+    "sexo": "F",
+    "tramiteNro": "222261631"
 }
-
-### Consulta DNI Sexo Incorrecto
-GET https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=22269197&sexo=F
-content-type: application/json
-
-# {
-#   "resultadoWS": {
-#     "exito": false,
-#     "codigoError": "123",
-#     "msgError": "No se encontraron resultados para esta consulta"
-#   }
-# }
-
-### Consulta DNI Numero Incorrecto
-GET https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=99123123&sexo=M
-content-type: application/json
-
-# {
-#   "resultadoWS": {
-#     "exito": false,
-#     "codigoError": "123",
-#     "msgError": "No se encontraron resultados para esta consulta"
-#   }
-# }
