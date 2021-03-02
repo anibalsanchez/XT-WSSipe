@@ -21,6 +21,10 @@
     <language tag="en-GB">en-GB/en-GB.plg_ajax_[EXTENSION_ALIAS].sys.ini</language>
   </languages>
 
+	<media destination="plg_xtwssipe" folder="media">
+		<folder>js</folder>
+	</media>
+
   <!-- Config parameters -->
   <config>
     <fields name="params">
