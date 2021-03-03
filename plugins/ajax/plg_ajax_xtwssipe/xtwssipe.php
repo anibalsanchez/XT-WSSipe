@@ -241,9 +241,8 @@ class PlgAjaxXtWsSipe extends CMSPlugin
                 function () use ($url) {
                     return $this->getContents($url, $this->username, $this->password);
                 },
-                false,
-                'getPersonaDni-'.$cacheKey,
-                false
+                [],
+                'getPersonaDni-'.$cacheKey
             );
         } catch (\JCacheException $cacheException) {
             $this->logError('getPersonaDni: '.$cacheException->getMessage());
