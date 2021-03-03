@@ -78,6 +78,16 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         }
 
         $input = new JInputJson();
+
+        $sessiontoken = JFactory::getSession()->getToken();
+        $webToken = $input->get('web_token');
+
+        if ($webToken !== $sessiontoken) {
+            $this->logError('Token Invalido');
+
+            return $this->invalidData();
+        }
+
         $dni = $input->getUint('dni');
         $sexo = $input->getWord('sexo');
         $tramiteNro = $input->getUint('tramiteNro');
@@ -108,7 +118,7 @@ class PlgAjaxXtWsSipe extends CMSPlugin
 
         $this->logInfo(sprintf('VALIDO (dni %s, sexo %s, tramite %s) Respuesta: %s', $dni, $sexo, $tramiteNro, json_encode($packet->personaInfo)));
 
-        return $this->validData($packet, $this->sign($dni));
+        return $this->validData($packet, $this->sign());
     }
 
     private function invalidData()
@@ -222,6 +232,22 @@ class PlgAjaxXtWsSipe extends CMSPlugin
     private function getPersonaDni($dni, $sexo)
     {
         $url = sprintf('https://soa.sanjuan.gob.ar/persona/dni/restv1?dni=%d&sexo=%s', $dni, $sexo);
+        $cacheKey = sha1($url);
+
+        $cache = JFactory::getCache('plg_ajax_xtwssipe', 'callback');
+
+        try {
+            return $cache->get(
+                function () use ($url) {
+                    return $this->getContents($url, $this->username, $this->password);
+                },
+                false,
+                'getPersonaDni-'.$cacheKey,
+                false
+            );
+        } catch (\JCacheException $cacheException) {
+            $this->logError('getPersonaDni: '.$cacheException->getMessage());
+        }
 
         return $this->getContents($url, $this->username, $this->password);
     }
@@ -245,9 +271,11 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         return $content;
     }
 
-    private function sign($dni)
+    private function sign()
     {
-        return base64_encode(sha1($dni, $this->certificate));
+        $sessiontoken = JFactory::getSession()->getToken();
+
+        return base64_encode(sha1($sessiontoken, $this->certificate));
     }
 
     private function logError($mensaje)
