@@ -56,6 +56,10 @@ function verificarConsultaDni(consultaDni) {
           consultaDni.dniValido = true;
           consultaDni.respuesta = resultado.data[0];
 
+          if (window.gtag) {
+            gtag('event', 'verificado');
+          }
+
           return;
         }
 
