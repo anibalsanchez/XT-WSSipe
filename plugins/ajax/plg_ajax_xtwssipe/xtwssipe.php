@@ -96,6 +96,10 @@ class PlgAjaxXtWsSipe extends CMSPlugin
             return $this->invalidData();
         }
 
+        if ($this->exists($dni)) {
+            return $this->invalidData('ya-recibido');
+        }
+
         $response = $this->getPersonaDni($dni, $sexo);
 
         if (empty($response)) {
@@ -121,9 +125,12 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         return $this->validData($packet, $this->sign());
     }
 
-    private function invalidData()
+    private function invalidData($errorCode = null)
     {
-        return ['estado' => false];
+        return [
+            'estado' => false,
+            'codigoError' => $errorCode,
+        ];
     }
 
     private function validData($packet, $firma)
@@ -307,5 +314,27 @@ class PlgAjaxXtWsSipe extends CMSPlugin
         $logger = new JLogLoggerFormattedtext($config);
         $entry = new JLogEntry('XtWsSipe - '.$mensaje, $status);
         $logger->addEntry($entry);
+    }
+
+    private function exists($value)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('dni'))
+            ->from($db->quoteName('si_view_solicitudes_dni'))
+            ->where($db->quoteName('dni').' = '.$db->quote($value))
+            ->setLimit(1);
+        $db->setQuery($query);
+
+        try {
+            $dni = $db->loadResult();
+
+            return !empty($dni);
+        } catch (Exception $e) {
+            $error = $e->getCode();
+            $this->logError('exists: '.$e->getMessage());
+        }
+
+        return true;
     }
 }

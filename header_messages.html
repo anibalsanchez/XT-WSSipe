@@ -1,0 +1,41 @@
+<html>
+
+<body>
+	<div x-show="consultaDni.incompleta" style="display: none;">
+		<div class="alert alert-warn">
+			<i class="fa fa-info-circle" aria-hidden="true"></i>
+			Por favor, complete los datos para poder verificarlos.
+		</div>
+	</div>
+
+	<div x-show="consultaDni.dniYaEnviado" style="display: none;">
+		<div class="alert alert-warn">
+			<i class="fa fa-info-circle" aria-hidden="true"></i>
+			Ya se han recibido una solicitud con el DNI enviado.
+		</div>
+	</div>
+
+	<div x-show="consultaDni.procesando" style="display: none;">
+		<div class="alert alert-info">
+			<i class="fa fa-info-circle" aria-hidden="true"></i>
+			Un momento, por favor. Estamos procesando su verificación ... <i
+				class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+		</div>
+	</div>
+
+	<div x-show="consultaDni.dniVerificado && !consultaDni.dniValido"
+		style="display: none;">
+		<div class="alert alert-error">
+			<i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+			No se pudo verificar los datos de identidad ingresados. Por favor,
+			compruebe si son correctos.
+
+			<br><br>
+			Para consultas acerca de las disposiciones sanitarias vigentes,
+			por etapas y según grupos de personas establecidos, puede
+			comunicarse al Mail <b>vacunacionsanjuan@sisanjuan.gob.ar</b>.
+		</div>
+	</div>
+</body>
+
+</html>

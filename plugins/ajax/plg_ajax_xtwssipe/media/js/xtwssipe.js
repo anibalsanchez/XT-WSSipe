@@ -22,6 +22,7 @@ function initialState() {
 
       dniVerificado: false,
       dniValido: false,
+      dniYaEnviado: false,
     },
   };
 }
@@ -41,6 +42,7 @@ function verificarConsultaDni(consultaDni) {
   consultaDni.procesando = true;
   consultaDni.dniVerificado = false;
   consultaDni.dniValido = false;
+  consultaDni.dniYaEnviado = false;
 
   const consultaAjax = function () {
     fetch(
@@ -51,19 +53,28 @@ function verificarConsultaDni(consultaDni) {
     )
       .then((response) => response.json())
       .then((resultado) => {
-        if (resultado && resultado.data && resultado.data[0] && resultado.data[0].estado) {
-          consultaDni.dniVerificado = true;
-          consultaDni.dniValido = true;
-          consultaDni.respuesta = resultado.data[0];
+        if (resultado && resultado.data && resultado.data[0]) {
+          if (resultado.data[0].estado) {
+            consultaDni.dniVerificado = true;
+            consultaDni.dniValido = true;
+            consultaDni.respuesta = resultado.data[0];
 
-          if (window.gtag) {
-            gtag('event', 'verificado');
+            if (window.gtag) {
+              gtag('event', 'verificado');
+            }
+
+            return;
           }
 
-          return;
+          if (resultado.data[0].codigoError && resultado.data[0].codigoError === 'ya-recibido') {
+            consultaDni.dniYaEnviado = true;
+            consultaDni.dniVerificado = false;
+            consultaDni.dniValido = false;
+
+            return;
+          }
         }
 
-        // console.log('Estado inválido');
         consultaDni.dniVerificado = true;
         consultaDni.dniValido = false;
       })
