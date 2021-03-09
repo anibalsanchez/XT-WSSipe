@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-param-reassign */
+
 function initialState() {
   return {
     consultaDni: {
@@ -27,7 +30,25 @@ function initialState() {
   };
 }
 
+function verificarDniSimple(consultaDni) {
+  consultaDni.incompleta = !consultaDni.query.dni
+    || !consultaDni.query.sexo
+    || !consultaDni.query.tramiteNro
+    || !consultaDni.query.web_token;
+
+  if (consultaDni.incompleta) {
+    return;
+  }
+
+  consultaDni.dniVerificado = true;
+  consultaDni.dniValido = true;
+}
+
 function verificarConsultaDni(consultaDni) {
+  return verificarDniSimple(consultaDni);
+}
+
+function verificarConsultaDniApi(consultaDni) {
   const DELAY = 30 * 1000;
 
   consultaDni.incompleta = !consultaDni.query.dni
@@ -44,7 +65,7 @@ function verificarConsultaDni(consultaDni) {
   consultaDni.dniValido = false;
   consultaDni.dniYaEnviado = false;
 
-  const consultaAjax = function () {
+  function consultaAjax() {
     fetch(
       '/index.php?option=com_ajax&plugin=xtwssipe&format=json', {
         method: 'POST',
@@ -57,9 +78,10 @@ function verificarConsultaDni(consultaDni) {
           if (resultado.data[0].estado) {
             consultaDni.dniVerificado = true;
             consultaDni.dniValido = true;
-            consultaDni.respuesta = resultado.data[0];
+            [consultaDni.respuesta] = resultado.data;
 
             if (window.gtag) {
+              // eslint-disable-next-line no-undef
               gtag('event', 'verificado');
             }
 
@@ -87,7 +109,7 @@ function verificarConsultaDni(consultaDni) {
       .finally(() => {
         consultaDni.procesando = false;
       });
-  };
+  }
 
   setTimeout(consultaAjax, DELAY);
 }
